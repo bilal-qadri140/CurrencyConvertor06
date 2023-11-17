@@ -3,13 +3,13 @@ import React, { useState } from 'react'
 import CurrencyButton from './CurrencyButton'
 // import currencyByRupee from './Constants'
 import { currencyByRupee } from './Constants'
-
+import Snackbar from 'react-native-snackbar'
 interface CurrencyPerRupee {
   [key: string]: number;
 }
 export default function App() {
 
-  const [inputValue, setInputValue] = useState(0)
+  const [inputValue, setInputValue] = useState('')
   const [resultValue, setResultValue] = useState(0)
 
 
@@ -26,16 +26,31 @@ export default function App() {
   }
 
 
+  const buttonPressed = (currency: string) => {
+    if (!inputValue) {
+      Snackbar.show({
+        text: 'Please Enter a Value',
+        backgroundColor: '#EA7773',
+        textColor: '#000',
+      });
+      setResultValue(0)
+    }
+    else {
+      let result = parseFloat(inputValue) * currencyPerRupee[currency]
+      setResultValue(result)
+    }
+  }
+
   return (
     <ScrollView style={styles.container}
       keyboardShouldPersistTaps={'handled'}
-      automaticallyAdjustKeyboardInsets ={true}
+      automaticallyAdjustKeyboardInsets={true}
     >
       <StatusBar backgroundColor={'#1b262c'} />
       <SafeAreaView >
         <View style={styles.resultContainer}>
           <Text style={styles.resultText}>
-            34
+            {resultValue}
           </Text>
         </View>
         <View style={styles.inputContainer}>
@@ -43,6 +58,8 @@ export default function App() {
             placeholder='Enter Value'
             placeholderTextColor={'#fff'}
             keyboardType='numeric'
+            value={inputValue}
+            onChangeText={(text) => setInputValue(text)}
           />
         </View>
 
@@ -51,6 +68,7 @@ export default function App() {
             <TouchableOpacity
               key={currency}
               style={styles.currencyButton}
+              onPress={() => { buttonPressed(currency) }}
             >
               <Text style={styles.currencyButtonText}>
                 {currency}
@@ -77,6 +95,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderColor: '#fff',
     borderWidth: 2,
+    marginHorizontal:6,
   },
   resultText: {
     color: '#fff',
@@ -91,13 +110,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderColor: '#fff',
     borderWidth: 2,
+    marginHorizontal:6,
   },
   inputText: {
     color: '#fff',
-    fontSize: 30,
+    fontSize: 20,
     fontWeight: 'bold',
-    width:'auto',
-    textAlign:'center'
+    width: '100%',
+    textAlign: 'center'
   },
   currencyButtonContainer: {
     flexDirection: 'row',
